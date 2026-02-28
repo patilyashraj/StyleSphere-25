@@ -23,6 +23,14 @@ app.use('/api/user',userRouter)
 app.use('/api/product',productRouter)
 app.use('/api/cart',cartRouter)
 app.use('/api/order',orderRouter)
+app.use(cors({
+    origin: [
+      'https://style-sphere-25-ow37-o60eg75we-patilyashrajs-projects.vercel.app',
+      'https://style-sphere-25-ysvl-y0p5e0kgg-patilyashrajs-projects.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:5174'
+    ]
+  }));
 
 app.get('/',(req,res)=>{
     res.send("API Working")
