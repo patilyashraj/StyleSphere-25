@@ -1,10 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const closeMenuTimeoutRef = useRef(null);
 
   const { setShowSearch, getCartCount, navigate, token, setToken, setCartItems } = useContext(ShopContext);
 
@@ -13,6 +15,22 @@ const Navbar = () => {
     localStorage.removeItem('token');
     setToken('');
     setCartItems({});
+  };
+
+  const handleProfileMouseEnter = () => {
+    if (closeMenuTimeoutRef.current) {
+      clearTimeout(closeMenuTimeoutRef.current);
+    }
+    setUserMenuOpen(true);
+  };
+
+  const handleProfileMouseLeave = () => {
+    if (closeMenuTimeoutRef.current) {
+      clearTimeout(closeMenuTimeoutRef.current);
+    }
+    closeMenuTimeoutRef.current = setTimeout(() => {
+      setUserMenuOpen(false);
+    }, 250); // adjust delay as needed
   };
 
   return (
@@ -56,15 +74,19 @@ const Navbar = () => {
           alt="search"
         />
 
-        <div className="relative group">
+        <div
+          className="relative"
+          onMouseEnter={handleProfileMouseEnter}
+          onMouseLeave={handleProfileMouseLeave}
+        >
           <img
             onClick={() => (token ? null : navigate('/login'))}
             className="w-5 cursor-pointer hover:scale-110 transition"
             src={assets.profile_icon}
             alt="profile"
           />
-          {token && (
-            <div className="absolute right-0 mt-2 hidden group-hover:block bg-white border border-gray-200 rounded-md shadow-lg w-44 py-2 text-sm">
+          {token && userMenuOpen && (
+            <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg w-44 py-2 text-sm">
               <p className="px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer">My Profile</p>
               <p onClick={() => navigate('/orders')} className="px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer">Orders</p>
               <p onClick={logout} className="px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer">Logout</p>
